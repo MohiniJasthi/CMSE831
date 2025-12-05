@@ -285,11 +285,23 @@ if solve_button:
             st.write(totals_both)
 
     # Optional: summary table comparing the three objectives
-    summary = pd.DataFrame([
-        {"Mode": "Minimize cost", **totals_cost},
-        {"Mode": "Minimize GHG", **totals_ghg},
-        {"Mode": "Weighted", **totals_both},
-    ])[["Mode", "Status", "Total_cost", "Total_GHG", "Total_calories", "Total_protein"]]
+    rows = []
 
+    for mode_name, totals in [
+        ("Minimize cost", totals_cost),
+        ("Minimize GHG", totals_ghg),
+        ("Weighted", totals_both),
+    ]:
+        rows.append({
+            "Mode": mode_name,
+            "Status": totals.get("Status", "N/A"),
+            "Total_cost": totals.get("Total_cost", np.nan),
+            "Total_GHG": totals.get("Total_GHG", np.nan),
+            "Total_calories": totals.get("Total_calories", np.nan),
+            "Total_protein": totals.get("Total_protein", np.nan),
+        })
+    
+    summary = pd.DataFrame(rows)
     st.subheader("Objective comparison across optimization modes")
     st.dataframe(summary, use_container_width=True)
+
